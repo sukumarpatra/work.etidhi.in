@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import { STATUSES, PRIORITIES, statusColor, priorityColor } from "@/lib/constants";
@@ -32,17 +33,61 @@ function Dropdown({
   open: boolean;
   setOpen: (v: boolean) => void;
 }) {
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{
+    left: number;
+    top?: number;
+    bottom?: number;
+    maxHeight: number;
+  } | null>(null);
+
+  // Compute a viewport-anchored position so the menu can be portaled to
+  // <body>, escaping any `overflow-hidden` ancestor (e.g. the group card).
+  useEffect(() => {
+    if (!open) {
+      setPos(null);
+      return;
+    }
+    const el = triggerRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const gap = 4;
+    const margin = 8;
+    const spaceBelow = window.innerHeight - r.bottom - margin;
+    const spaceAbove = r.top - margin;
+    const openUp = spaceBelow < 240 && spaceAbove > spaceBelow;
+    const left = Math.max(margin, Math.min(r.left, window.innerWidth - 200));
+    setPos(
+      openUp
+        ? { left, bottom: window.innerHeight - r.top + gap, maxHeight: spaceAbove }
+        : { left, top: r.bottom + gap, maxHeight: spaceBelow },
+    );
+  }, [open]);
+
   return (
     <div className="relative">
-      <div onClick={() => setOpen(!open)}>{trigger}</div>
-      {open && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="menu-pop absolute left-0 top-full z-50 mt-1 min-w-40 rounded-lg border border-[#d0d4e4] bg-white py-1 shadow-xl">
-            {children}
-          </div>
-        </>
-      )}
+      <div ref={triggerRef} onClick={() => setOpen(!open)}>
+        {trigger}
+      </div>
+      {open &&
+        pos &&
+        createPortal(
+          <>
+            <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+            <div
+              className="menu-pop fixed z-50 flex min-w-40 flex-col overflow-y-auto rounded-lg border border-[#d0d4e4] bg-white py-1 shadow-xl"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                bottom: pos.bottom,
+                maxHeight: pos.maxHeight,
+              }}
+            >
+              {children}
+            </div>
+          </>,
+          document.body,
+        )}
     </div>
   );
 }
