@@ -123,6 +123,13 @@ function PersonCell({
   onChange: (id: number | null) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  useEffect(() => {
+    if (!open) setQuery("");
+  }, [open]);
+  const matches = users.filter((u) =>
+    u.name.toLowerCase().includes(query.trim().toLowerCase()),
+  );
   return (
     <Dropdown
       open={open}
@@ -139,25 +146,41 @@ function PersonCell({
         </button>
       }
     >
-      {users.map((u) => (
-        <button
-          key={u.id}
-          onClick={() => {
-            setOpen(false);
-            onChange(u.id);
-          }}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f6f7fb]"
-        >
-          <Avatar id={u.id} name={u.name} size={22} />
-          {u.name}
-        </button>
-      ))}
+      <div className="px-2 pb-1 pt-0.5">
+        <input
+          autoFocus
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onClick={(e) => e.stopPropagation()}
+          placeholder="Search people…"
+          className="w-full rounded border border-[#d0d4e4] px-2 py-1 text-sm focus:border-[#6161ff] focus:outline-none"
+        />
+      </div>
+      <div className="max-h-56 overflow-y-auto">
+        {matches.length === 0 ? (
+          <div className="px-3 py-2 text-sm text-[#9699a6]">No people found</div>
+        ) : (
+          matches.map((u) => (
+            <button
+              key={u.id}
+              onClick={() => {
+                setOpen(false);
+                onChange(u.id);
+              }}
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f6f7fb]"
+            >
+              <Avatar id={u.id} name={u.name} size={22} />
+              {u.name}
+            </button>
+          ))
+        )}
+      </div>
       <button
         onClick={() => {
           setOpen(false);
           onChange(null);
         }}
-        className="w-full px-3 py-2 text-left text-sm text-[#676879] hover:bg-[#f6f7fb]"
+        className="w-full border-t border-[#f0f1f5] px-3 py-2 text-left text-sm text-[#676879] hover:bg-[#f6f7fb]"
       >
         Unassign
       </button>
