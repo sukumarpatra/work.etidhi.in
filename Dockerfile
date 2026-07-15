@@ -23,9 +23,10 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # App data (SQLite database + uploaded bill photos) lives here.
-# Mount a persistent volume at /app/data so it survives restarts/redeploys.
+# Attach a persistent volume at /app/data in your host (e.g. Railway Volumes)
+# so it survives restarts/redeploys. No Docker VOLUME line — Railway rejects it
+# and manages the mount itself.
 RUN mkdir -p /app/data
-VOLUME ["/app/data"]
 
 EXPOSE 3000
 CMD ["node", "server.js"]
