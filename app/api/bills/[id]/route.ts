@@ -110,6 +110,28 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
   }
 
+  if (body.action === "acknowledge") {
+    if (session.id !== bill.user_id) {
+      return NextResponse.json(
+        { error: "Only the bill submitter can acknowledge reimbursement." },
+        { status: 403 }
+      );
+    }
+    if (bill.status !== "Reimbursed") {
+      return NextResponse.json(
+        { error: "Only reimbursed bills can be acknowledged." },
+        { status: 400 }
+      );
+    }
+    db.prepare("UPDATE bills SET acknowledged_at = datetime('now') WHERE id = ?").run(bill.id);
+    logActivity({
+      boardId: null,
+      userId: session.id,
+      action: "acknowledged reimbursement",
+      detail: `"${bill.title}" · ₹${bill.amount}`,
+    });
+  }
+
   const updated = db.prepare(`${BILL_SELECT} WHERE b.id = ?`).get(bill.id);
   return NextResponse.json({ bill: updated });
 }

@@ -38,42 +38,42 @@ export default async function MyWorkPage() {
     if (list.length === 0) return null;
     return (
       <section className="mt-6">
-        <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-[#676879]">
+        <h2 className="mb-2 text-[12px] font-semibold uppercase tracking-wider text-[#9b9a97]">
           {title} ({list.length})
         </h2>
-        <div className="overflow-hidden rounded-xl border border-[#d0d4e4] bg-white">
+        <div className="rounded-md border border-[#e8e5e0]">
           {list.map((r, idx) => (
             <Link
               key={r.id}
               href={`/boards/${r.board_id}`}
-              className={`flex items-center gap-4 px-5 py-3.5 transition hover:bg-[#f6f7fb] ${
-                idx > 0 ? "border-t border-[#f0f1f5]" : ""
+              className={`flex items-center gap-3 px-4 py-3 transition hover:bg-[#f7f6f3] ${
+                idx > 0 ? "border-t border-[#e8e5e0]/60" : ""
               }`}
             >
               <span
-                className="h-2.5 w-2.5 shrink-0 rounded-sm"
+                className="h-2 w-2 shrink-0 rounded-sm"
                 style={{ backgroundColor: r.board_color }}
               />
               <div className="min-w-0 flex-1">
-                <div className="truncate font-medium text-[#323338]">{r.name}</div>
-                <div className="text-xs text-[#676879]">
-                  {r.board_name} · {r.group_name}
+                <div className="truncate text-sm text-[#37352f]">{r.name}</div>
+                <div className="text-[12px] text-[#c3c2bf]">
+                  {r.board_name} &middot; {r.group_name}
                 </div>
               </div>
               <span
-                className="rounded px-2.5 py-1 text-xs font-medium text-white"
+                className="hidden rounded px-2 py-0.5 text-[11px] font-medium text-white sm:inline"
                 style={{ backgroundColor: priorityColor(r.priority) }}
               >
                 {r.priority}
               </span>
               <span
-                className="w-28 rounded px-2.5 py-1 text-center text-xs font-medium text-white"
+                className="w-auto shrink-0 rounded px-2 py-0.5 text-center text-[11px] font-medium text-white sm:w-24"
                 style={{ backgroundColor: statusColor(r.status) }}
               >
                 {r.status}
               </span>
-              <span className="w-24 text-right text-xs text-[#676879]">
-                {r.due_date ?? "No due date"}
+              <span className="hidden w-20 text-right text-[12px] text-[#c3c2bf] sm:block">
+                {r.due_date ?? "No date"}
               </span>
             </Link>
           ))}
@@ -83,14 +83,14 @@ export default async function MyWorkPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-8 py-8">
-      <h1 className="text-2xl font-bold text-[#323338]">My Work</h1>
-      <p className="mt-1 text-[#676879]">
-        Everything assigned to you across all Etidhi boards.
+    <div className="mx-auto max-w-4xl px-4 py-6 md:px-10 md:py-10">
+      <h1 className="text-2xl font-bold text-[#37352f]">My Work</h1>
+      <p className="mt-1 text-[13px] text-[#9b9a97]">
+        Everything assigned to you across all boards.
       </p>
       {rows.length === 0 && (
-        <div className="mt-10 rounded-xl border border-dashed border-[#d0d4e4] bg-white p-10 text-center text-[#676879]">
-          Nothing assigned to you yet. 🎉
+        <div className="mt-8 rounded-lg border border-dashed border-[#e8e5e0] p-8 text-center text-[13px] text-[#9b9a97]">
+          Nothing assigned to you yet.
         </div>
       )}
       <Section title="Open tasks" list={open} />

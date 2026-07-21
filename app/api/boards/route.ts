@@ -19,16 +19,19 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await requireSession();
-  const { name, description } = await req.json().catch(() => ({}));
+  const { name, description, category } = await req.json().catch(() => ({}));
   if (typeof name !== "string" || !name.trim()) {
     return NextResponse.json({ error: "Board name is required." }, { status: 400 });
   }
 
+  const VALID_CATEGORIES = ["General", "Action Items", "Client", "Partners"];
+  const cat = VALID_CATEGORIES.includes(category) ? category : "General";
+
   const db = getDb();
   const color = BOARD_COLORS[Math.floor(Math.random() * BOARD_COLORS.length)];
   const result = db
-    .prepare("INSERT INTO boards (name, description, color, created_by) VALUES (?, ?, ?, ?)")
-    .run(name.trim(), typeof description === "string" ? description.trim() : "", color, session.id);
+    .prepare("INSERT INTO boards (name, description, color, created_by, category) VALUES (?, ?, ?, ?, ?)")
+    .run(name.trim(), typeof description === "string" ? description.trim() : "", color, session.id, cat);
   const boardId = Number(result.lastInsertRowid);
 
   const insertGroup = db.prepare(

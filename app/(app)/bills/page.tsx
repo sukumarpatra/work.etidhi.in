@@ -21,10 +21,10 @@ export default async function BillsPage() {
       ? db.prepare(`${BILL_SELECT} ORDER BY b.created_at DESC, b.id DESC`).all()
       : db
           .prepare(
-            `${BILL_SELECT} WHERE b.user_id = ? OR b.approver_id = ?
+            `${BILL_SELECT} WHERE b.user_id = ?
              ORDER BY b.created_at DESC, b.id DESC`
           )
-          .all(session.id, session.id)
+          .all(session.id)
   ) as Bill[];
 
   const users = db

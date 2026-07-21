@@ -1,58 +1,58 @@
 export const STATUSES = [
-  { value: "Not Started", color: "#797e93" },
-  { value: "Working on it", color: "#fdab3d" },
-  { value: "Stuck", color: "#df2f4a" },
-  { value: "In Review", color: "#a25ddc" },
-  { value: "Done", color: "#00c875" },
+  { value: "Not Started", color: "#787774" },
+  { value: "Working on it", color: "#d9730d" },
+  { value: "Stuck", color: "#e03e3e" },
+  { value: "In Review", color: "#9065b0" },
+  { value: "Done", color: "#4dab9a" },
 ] as const;
 
 export const PRIORITIES = [
-  { value: "Critical", color: "#333333" },
-  { value: "High", color: "#401694" },
-  { value: "Medium", color: "#5559df" },
-  { value: "Low", color: "#579bfc" },
-  { value: "None", color: "#c4c4c4" },
+  { value: "Critical", color: "#e03e3e" },
+  { value: "High", color: "#d9730d" },
+  { value: "Medium", color: "#cb912f" },
+  { value: "Low", color: "#2383e2" },
+  { value: "None", color: "#9b9a97" },
 ] as const;
 
 export const GROUP_COLORS = [
-  "#579bfc",
-  "#00c875",
-  "#a25ddc",
-  "#fdab3d",
-  "#df2f4a",
-  "#66ccff",
-  "#ff642e",
-  "#00d2d2",
+  "#2383e2",
+  "#4dab9a",
+  "#9065b0",
+  "#d9730d",
+  "#e03e3e",
+  "#6940a5",
+  "#ad5700",
+  "#0f7b6c",
 ];
 
 export const BOARD_COLORS = [
-  "#6161ff",
-  "#00c875",
-  "#fdab3d",
-  "#df2f4a",
-  "#a25ddc",
-  "#00d2d2",
-  "#ff642e",
-  "#579bfc",
+  "#2383e2",
+  "#4dab9a",
+  "#d9730d",
+  "#e03e3e",
+  "#9065b0",
+  "#0f7b6c",
+  "#ad5700",
+  "#6940a5",
 ];
 
 export const AVATAR_COLORS = [
-  "#ff642e",
-  "#00c875",
-  "#a25ddc",
-  "#579bfc",
-  "#fdab3d",
-  "#df2f4a",
-  "#00d2d2",
-  "#6161ff",
+  "#d9730d",
+  "#4dab9a",
+  "#9065b0",
+  "#2383e2",
+  "#cb912f",
+  "#e03e3e",
+  "#0f7b6c",
+  "#6940a5",
 ];
 
 export function statusColor(status: string) {
-  return STATUSES.find((s) => s.value === status)?.color ?? "#797e93";
+  return STATUSES.find((s) => s.value === status)?.color ?? "#787774";
 }
 
 export function priorityColor(priority: string) {
-  return PRIORITIES.find((p) => p.value === priority)?.color ?? "#c4c4c4";
+  return PRIORITIES.find((p) => p.value === priority)?.color ?? "#9b9a97";
 }
 
 export function avatarColor(id: number) {

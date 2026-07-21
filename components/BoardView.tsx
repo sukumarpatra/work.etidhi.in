@@ -20,8 +20,6 @@ async function api(path: string, method: string, body?: unknown) {
   return data;
 }
 
-/* ---------- small dropdown menu ---------- */
-
 function Dropdown({
   trigger,
   children,
@@ -41,8 +39,6 @@ function Dropdown({
     maxHeight: number;
   } | null>(null);
 
-  // Compute a viewport-anchored position so the menu can be portaled to
-  // <body>, escaping any `overflow-hidden` ancestor (e.g. the group card).
   useEffect(() => {
     if (!open) {
       setPos(null);
@@ -75,7 +71,7 @@ function Dropdown({
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
             <div
-              className="menu-pop fixed z-50 flex min-w-40 flex-col overflow-y-auto rounded-lg border border-[#d0d4e4] bg-white py-1 shadow-xl"
+              className="menu-pop fixed z-50 flex min-w-40 flex-col overflow-y-auto rounded-md border border-[#e8e5e0] bg-white py-1 shadow-lg"
               style={{
                 left: pos.left,
                 top: pos.top,
@@ -92,8 +88,6 @@ function Dropdown({
   );
 }
 
-/* ---------- editable cells ---------- */
-
 function StatusCell({ item, onChange }: { item: Item; onChange: (status: string) => void }) {
   const [open, setOpen] = useState(false);
   return (
@@ -102,7 +96,7 @@ function StatusCell({ item, onChange }: { item: Item; onChange: (status: string)
       setOpen={setOpen}
       trigger={
         <button
-          className="w-full cursor-pointer py-2 text-center text-xs font-medium text-white transition hover:opacity-90"
+          className="w-full cursor-pointer rounded-sm px-2 py-1.5 text-center text-[12px] font-medium text-white transition hover:opacity-90"
           style={{ backgroundColor: statusColor(item.status) }}
         >
           {item.status}
@@ -116,9 +110,9 @@ function StatusCell({ item, onChange }: { item: Item; onChange: (status: string)
             setOpen(false);
             onChange(s.value);
           }}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f6f7fb]"
+          className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] text-[#37352f] hover:bg-[#f1f1ef]"
         >
-          <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: s.color }} />
+          <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: s.color }} />
           {s.value}
         </button>
       ))}
@@ -134,7 +128,7 @@ function PriorityCell({ item, onChange }: { item: Item; onChange: (p: string) =>
       setOpen={setOpen}
       trigger={
         <button
-          className="w-full cursor-pointer py-2 text-center text-xs font-medium text-white transition hover:opacity-90"
+          className="w-full cursor-pointer rounded-sm px-2 py-1.5 text-center text-[12px] font-medium text-white transition hover:opacity-90"
           style={{ backgroundColor: priorityColor(item.priority) }}
         >
           {item.priority}
@@ -148,9 +142,9 @@ function PriorityCell({ item, onChange }: { item: Item; onChange: (p: string) =>
             setOpen(false);
             onChange(p.value);
           }}
-          className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f6f7fb]"
+          className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] text-[#37352f] hover:bg-[#f1f1ef]"
         >
-          <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: p.color }} />
+          <span className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: p.color }} />
           {p.value}
         </button>
       ))}
@@ -180,11 +174,11 @@ function PersonCell({
       open={open}
       setOpen={setOpen}
       trigger={
-        <button className="flex w-full cursor-pointer items-center justify-center py-1.5 transition hover:bg-[#f6f7fb]">
+        <button className="flex w-full cursor-pointer items-center justify-center py-1.5 transition hover:bg-[#f1f1ef]">
           {item.assignee_id && item.assignee_name ? (
-            <Avatar id={item.assignee_id} name={item.assignee_name} size={26} />
+            <Avatar id={item.assignee_id} name={item.assignee_name} size={22} />
           ) : (
-            <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full border border-dashed border-[#c5c7d0] text-xs text-[#9699a6]">
+            <span className="flex h-[22px] w-[22px] items-center justify-center rounded-full border border-dashed border-[#c3c2bf] text-[11px] text-[#9b9a97]">
               +
             </span>
           )}
@@ -197,13 +191,13 @@ function PersonCell({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onClick={(e) => e.stopPropagation()}
-          placeholder="Search people…"
-          className="w-full rounded border border-[#d0d4e4] px-2 py-1 text-sm focus:border-[#6161ff] focus:outline-none"
+          placeholder="Search..."
+          className="w-full rounded border border-[#e8e5e0] px-2 py-1 text-[13px] text-[#37352f] focus:border-[#2383e2] focus:outline-none"
         />
       </div>
       <div className="max-h-56 overflow-y-auto">
         {matches.length === 0 ? (
-          <div className="px-3 py-2 text-sm text-[#9699a6]">No people found</div>
+          <div className="px-3 py-2 text-[13px] text-[#9b9a97]">No people found</div>
         ) : (
           matches.map((u) => (
             <button
@@ -212,9 +206,9 @@ function PersonCell({
                 setOpen(false);
                 onChange(u.id);
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[#f6f7fb]"
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[13px] text-[#37352f] hover:bg-[#f1f1ef]"
             >
-              <Avatar id={u.id} name={u.name} size={22} />
+              <Avatar id={u.id} name={u.name} size={18} />
               {u.name}
             </button>
           ))
@@ -225,7 +219,7 @@ function PersonCell({
           setOpen(false);
           onChange(null);
         }}
-        className="w-full border-t border-[#f0f1f5] px-3 py-2 text-left text-sm text-[#676879] hover:bg-[#f6f7fb]"
+        className="w-full border-t border-[#e8e5e0]/60 px-3 py-1.5 text-left text-[13px] text-[#9b9a97] hover:bg-[#f1f1ef]"
       >
         Unassign
       </button>
@@ -256,22 +250,20 @@ function NameCell({ item, onRename }: { item: Item; onRename: (name: string) => 
             setEditing(false);
           }
         }}
-        className="w-full rounded border border-[#6161ff] px-2 py-1 text-sm"
+        className="w-full rounded border border-[#2383e2] px-2 py-1 text-[13px] text-[#37352f]"
       />
     );
   }
   return (
     <button
       onClick={() => setEditing(true)}
-      className="w-full truncate rounded px-2 py-1 text-left text-sm text-[#323338] hover:bg-[#f6f7fb]"
+      className="w-full truncate rounded px-2 py-1 text-left text-[13px] text-[#37352f] hover:bg-[#f1f1ef]"
       title={item.name}
     >
       {item.name}
     </button>
   );
 }
-
-/* ---------- main board view ---------- */
 
 export default function BoardView({
   initialBoard,
@@ -395,42 +387,41 @@ export default function BoardView({
   }
 
   const TABS: { key: Tab; label: string }[] = [
-    { key: "table", label: "Main Table" },
-    { key: "kanban", label: "Kanban" },
+    { key: "table", label: "Table" },
+    { key: "kanban", label: "Board" },
     { key: "activity", label: "Activity" },
   ];
 
   return (
     <div className="flex h-full flex-col">
-      {/* Board header */}
-      <div className="border-b border-[#d0d4e4] bg-white px-8 pt-5">
+      <div className="border-b border-[#e8e5e0]/60 px-4 pt-4 md:px-10 md:pt-6">
         <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="h-3.5 w-3.5 rounded-sm" style={{ backgroundColor: board.color }} />
-              <h1 className="text-xl font-bold text-[#323338]">{board.name}</h1>
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-sm" style={{ backgroundColor: board.color }} />
+              <h1 className="text-2xl font-bold text-[#37352f]">{board.name}</h1>
             </div>
             {board.description && (
-              <p className="mt-1 text-sm text-[#676879]">{board.description}</p>
+              <p className="mt-1 text-[13px] text-[#9b9a97]">{board.description}</p>
             )}
           </div>
           <button
             onClick={deleteBoard}
-            className="rounded-lg px-3 py-1.5 text-sm text-[#676879] transition hover:bg-[#df2f4a]/10 hover:text-[#df2f4a]"
+            className="rounded-md px-2.5 py-1 text-[13px] text-[#9b9a97] transition hover:bg-[#f1f1ef] hover:text-[#e03e3e]"
           >
-            Delete board
+            Delete
           </button>
         </div>
 
-        <div className="mt-4 flex items-center gap-1">
+        <div className="mt-4 flex items-center gap-0.5">
           {TABS.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
-              className={`border-b-2 px-4 py-2.5 text-sm font-medium transition ${
+              className={`border-b-2 px-3 py-2 text-[13px] font-medium transition ${
                 tab === t.key
-                  ? "border-[#6161ff] text-[#6161ff]"
-                  : "border-transparent text-[#676879] hover:text-[#323338]"
+                  ? "border-[#37352f] text-[#37352f]"
+                  : "border-transparent text-[#9b9a97] hover:text-[#37352f]"
               }`}
             >
               {t.label}
@@ -439,19 +430,18 @@ export default function BoardView({
         </div>
       </div>
 
-      {/* Toolbar */}
       {tab !== "activity" && (
-        <div className="flex items-center gap-3 border-b border-[#d0d4e4] bg-white px-8 py-3">
+        <div className="flex items-center gap-2 border-b border-[#e8e5e0]/60 px-4 py-2 md:px-10">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="🔍 Search items…"
-            className="w-56 rounded-lg border border-[#d0d4e4] px-3 py-1.5 text-sm focus:border-[#6161ff]"
+            placeholder="Filter..."
+            className="w-full rounded-md border border-[#e8e5e0] px-2.5 py-1 text-[13px] text-[#37352f] placeholder:text-[#9b9a97] focus:border-[#2383e2] sm:w-48"
           />
           <select
             value={personFilter}
             onChange={(e) => setPersonFilter(Number(e.target.value))}
-            className="rounded-lg border border-[#d0d4e4] bg-white px-3 py-1.5 text-sm text-[#323338]"
+            className="rounded-md border border-[#e8e5e0] bg-white px-2.5 py-1 text-[13px] text-[#37352f]"
           >
             <option value={0}>All people</option>
             {users.map((u) => (
@@ -460,102 +450,105 @@ export default function BoardView({
               </option>
             ))}
           </select>
-          {error && <span className="text-sm font-medium text-[#df2f4a]">{error}</span>}
+          {error && <span className="text-[13px] font-medium text-[#e03e3e]">{error}</span>}
         </div>
       )}
 
-      <div className="flex-1 overflow-y-auto px-8 py-6">
-        {/* ============ TABLE VIEW ============ */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 md:px-10 md:py-6">
         {tab === "table" && (
-          <div className="space-y-8">
+          <div className="space-y-6">
             {groups.map((group) => {
               const groupItems = filtered.filter((i) => i.group_id === group.id);
               const allGroupItems = items.filter((i) => i.group_id === group.id);
               const isCollapsed = collapsed.has(group.id);
               return (
                 <div key={group.id}>
-                  <div className="mb-1.5 flex items-center gap-2">
+                  <div className="mb-1 flex items-center gap-1.5">
                     <button
                       onClick={() => toggleGroup(group.id)}
-                      className="text-xs text-[#676879] transition hover:text-[#323338]"
+                      className="text-[11px] text-[#9b9a97] transition hover:text-[#37352f]"
                     >
-                      {isCollapsed ? "▶" : "▼"}
+                      <svg
+                        width="10"
+                        height="10"
+                        viewBox="0 0 10 10"
+                        style={{ transform: isCollapsed ? "rotate(-90deg)" : "rotate(0)" }}
+                        className="transition-transform"
+                      >
+                        <path d="M3 2l4 3-4 3" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
                     </button>
-                    <h3 className="text-[15px] font-semibold" style={{ color: group.color }}>
+                    <h3 className="text-sm font-semibold" style={{ color: group.color }}>
                       {group.name}
                     </h3>
-                    <span className="text-xs text-[#9699a6]">
-                      {allGroupItems.length} item{allGroupItems.length !== 1 ? "s" : ""}
+                    <span className="text-[12px] text-[#c3c2bf]">
+                      {allGroupItems.length}
                     </span>
                     <button
                       onClick={() => deleteGroup(group.id)}
                       title="Delete group"
-                      className="ml-1 text-xs text-[#c5c7d0] transition hover:text-[#df2f4a]"
+                      className="ml-0.5 text-[11px] text-[#c3c2bf] transition hover:text-[#e03e3e]"
                     >
-                      ✕
+                      &times;
                     </button>
                   </div>
 
                   {!isCollapsed && (
-                    <div
-                      className="overflow-hidden rounded-lg border border-[#d0d4e4] bg-white"
-                      style={{ borderLeft: `4px solid ${group.color}` }}
-                    >
-                      <div className="grid grid-cols-[minmax(200px,1fr)_90px_130px_110px_130px_40px] items-center gap-0 border-b border-[#f0f1f5] bg-[#fafbfc] text-xs font-medium text-[#676879]">
-                        <div className="px-3 py-2">Item</div>
-                        <div className="border-l border-[#f0f1f5] px-2 py-2 text-center">Person</div>
-                        <div className="border-l border-[#f0f1f5] py-2 text-center">Status</div>
-                        <div className="border-l border-[#f0f1f5] py-2 text-center">Priority</div>
-                        <div className="border-l border-[#f0f1f5] px-2 py-2 text-center">Due date</div>
-                        <div className="border-l border-[#f0f1f5]" />
+                    <div className="overflow-x-auto rounded-md border border-[#e8e5e0]">
+                      <div className="grid grid-cols-[minmax(200px,1fr)_80px_120px_100px_120px_32px] items-center gap-0 border-b border-[#e8e5e0] bg-[#f7f6f3] text-[11px] font-medium uppercase tracking-wider text-[#9b9a97]">
+                        <div className="px-3 py-1.5">Item</div>
+                        <div className="border-l border-[#e8e5e0] px-2 py-1.5 text-center">Person</div>
+                        <div className="border-l border-[#e8e5e0] py-1.5 text-center">Status</div>
+                        <div className="border-l border-[#e8e5e0] py-1.5 text-center">Priority</div>
+                        <div className="border-l border-[#e8e5e0] px-2 py-1.5 text-center">Due date</div>
+                        <div className="border-l border-[#e8e5e0]" />
                       </div>
 
                       {groupItems.map((item) => (
                         <div
                           key={item.id}
-                          className="group grid grid-cols-[minmax(200px,1fr)_90px_130px_110px_130px_40px] items-stretch border-b border-[#f0f1f5] last:border-b-0"
+                          className="group grid grid-cols-[minmax(200px,1fr)_80px_120px_100px_120px_32px] items-stretch border-b border-[#e8e5e0]/60 last:border-b-0"
                         >
-                          <div className="flex items-center px-1.5 py-1">
+                          <div className="flex items-center px-1.5 py-0.5">
                             <NameCell item={item} onRename={(name) => updateItem(item.id, { name })} />
                           </div>
-                          <div className="flex items-center justify-center border-l border-[#f0f1f5]">
+                          <div className="flex items-center justify-center border-l border-[#e8e5e0]/60">
                             <PersonCell
                               item={item}
                               users={users}
                               onChange={(assigneeId) => updateItem(item.id, { assigneeId })}
                             />
                           </div>
-                          <div className="border-l border-[#f0f1f5]">
+                          <div className="flex items-center border-l border-[#e8e5e0]/60 px-1">
                             <StatusCell item={item} onChange={(status) => updateItem(item.id, { status })} />
                           </div>
-                          <div className="border-l border-[#f0f1f5]">
+                          <div className="flex items-center border-l border-[#e8e5e0]/60 px-1">
                             <PriorityCell
                               item={item}
                               onChange={(priority) => updateItem(item.id, { priority })}
                             />
                           </div>
-                          <div className="flex items-center justify-center border-l border-[#f0f1f5] px-2">
+                          <div className="flex items-center justify-center border-l border-[#e8e5e0]/60 px-1">
                             <input
                               type="date"
                               value={item.due_date ?? ""}
                               onChange={(e) => updateItem(item.id, { dueDate: e.target.value || null })}
-                              className="w-full cursor-pointer rounded bg-transparent px-1 py-1 text-center text-xs text-[#323338] hover:bg-[#f6f7fb]"
+                              className="w-full cursor-pointer rounded bg-transparent px-1 py-1 text-center text-[12px] text-[#37352f] hover:bg-[#f1f1ef]"
                             />
                           </div>
-                          <div className="flex items-center justify-center border-l border-[#f0f1f5]">
+                          <div className="flex items-center justify-center border-l border-[#e8e5e0]/60">
                             <button
                               onClick={() => deleteItem(item.id)}
                               title="Delete item"
-                              className="text-xs text-transparent transition group-hover:text-[#c5c7d0] group-hover:hover:text-[#df2f4a]"
+                              className="text-[12px] text-transparent transition group-hover:text-[#c3c2bf] group-hover:hover:text-[#e03e3e]"
                             >
-                              🗑
+                              &times;
                             </button>
                           </div>
                         </div>
                       ))}
 
-                      {/* Add item row */}
-                      <div className="px-1.5 py-1">
+                      <div className="px-1.5 py-0.5">
                         {newItemGroup === group.id ? (
                           <input
                             autoFocus
@@ -572,8 +565,8 @@ export default function BoardView({
                               if (newItemName.trim()) addItem(group.id);
                               setNewItemGroup(null);
                             }}
-                            placeholder="Type item name and press Enter…"
-                            className="w-full rounded border border-[#6161ff] px-2 py-1.5 text-sm"
+                            placeholder="Type item name and press Enter..."
+                            className="w-full rounded border border-[#2383e2] px-2 py-1 text-[13px] text-[#37352f]"
                           />
                         ) : (
                           <button
@@ -581,18 +574,17 @@ export default function BoardView({
                               setNewItemGroup(group.id);
                               setNewItemName("");
                             }}
-                            className="w-full rounded px-2 py-1.5 text-left text-sm text-[#9699a6] transition hover:bg-[#f6f7fb] hover:text-[#6161ff]"
+                            className="w-full rounded px-2 py-1 text-left text-[13px] text-[#c3c2bf] transition hover:bg-[#f1f1ef] hover:text-[#2383e2]"
                           >
-                            + Add item
+                            + New
                           </button>
                         )}
                       </div>
                     </div>
                   )}
 
-                  {/* status distribution bar */}
                   {!isCollapsed && allGroupItems.length > 0 && (
-                    <div className="mt-1 flex h-1.5 overflow-hidden rounded-full">
+                    <div className="mt-0.5 flex h-1 overflow-hidden rounded-full">
                       {STATUSES.map((s) => {
                         const n = allGroupItems.filter((i) => i.status === s.value).length;
                         if (!n) return null;
@@ -613,7 +605,6 @@ export default function BoardView({
               );
             })}
 
-            {/* Add group */}
             {addingGroup ? (
               <input
                 autoFocus
@@ -627,23 +618,22 @@ export default function BoardView({
                   if (newGroupName.trim()) addGroup();
                   else setAddingGroup(false);
                 }}
-                placeholder="Group name…"
-                className="rounded-lg border border-[#6161ff] px-3 py-2 text-sm"
+                placeholder="Group name..."
+                className="rounded-md border border-[#2383e2] px-3 py-1.5 text-[13px] text-[#37352f]"
               />
             ) : (
               <button
                 onClick={() => setAddingGroup(true)}
-                className="rounded-lg border border-[#d0d4e4] bg-white px-4 py-2 text-sm font-medium text-[#323338] transition hover:border-[#6161ff] hover:text-[#6161ff]"
+                className="rounded-md px-3 py-1.5 text-[13px] text-[#9b9a97] transition hover:bg-[#f1f1ef] hover:text-[#2383e2]"
               >
-                + Add new group
+                + Add group
               </button>
             )}
           </div>
         )}
 
-        {/* ============ KANBAN VIEW ============ */}
         {tab === "kanban" && (
-          <div className="flex gap-4 overflow-x-auto pb-4">
+          <div className="flex gap-3 overflow-x-auto pb-4">
             {STATUSES.map((s) => {
               const colItems = filtered.filter((i) => i.status === s.value);
               return (
@@ -656,15 +646,14 @@ export default function BoardView({
                       dragItemId.current = null;
                     }
                   }}
-                  className="flex w-64 shrink-0 flex-col rounded-xl bg-[#eef0f5]"
+                  className="flex w-56 shrink-0 flex-col rounded-md bg-[#f7f6f3]"
                 >
-                  <div
-                    className="rounded-t-xl px-4 py-2.5 text-sm font-semibold text-white"
-                    style={{ backgroundColor: s.color }}
-                  >
-                    {s.value} <span className="font-normal opacity-80">/ {colItems.length}</span>
+                  <div className="flex items-center gap-2 px-3 py-2">
+                    <span className="h-2 w-2 rounded-full" style={{ backgroundColor: s.color }} />
+                    <span className="text-[12px] font-semibold text-[#37352f]">{s.value}</span>
+                    <span className="text-[11px] text-[#c3c2bf]">{colItems.length}</span>
                   </div>
-                  <div className="flex-1 space-y-2 p-2.5">
+                  <div className="flex-1 space-y-1.5 px-1.5 pb-2">
                     {colItems.map((item) => {
                       const group = groups.find((g) => g.id === item.group_id);
                       return (
@@ -672,9 +661,9 @@ export default function BoardView({
                           key={item.id}
                           draggable
                           onDragStart={() => (dragItemId.current = item.id)}
-                          className="cursor-grab rounded-lg border border-[#d0d4e4] bg-white p-3 shadow-sm transition hover:shadow-md active:cursor-grabbing"
+                          className="cursor-grab rounded-md border border-[#e8e5e0] bg-white p-2.5 transition hover:bg-[#fafaf8] active:cursor-grabbing"
                         >
-                          <div className="text-sm font-medium text-[#323338]">{item.name}</div>
+                          <div className="text-[13px] text-[#37352f]">{item.name}</div>
                           <div className="mt-2 flex items-center justify-between">
                             <span
                               className="rounded px-1.5 py-0.5 text-[10px] font-medium text-white"
@@ -683,18 +672,18 @@ export default function BoardView({
                               {item.priority}
                             </span>
                             {item.assignee_id && item.assignee_name && (
-                              <Avatar id={item.assignee_id} name={item.assignee_name} size={22} />
+                              <Avatar id={item.assignee_id} name={item.assignee_name} size={18} />
                             )}
                           </div>
-                          <div className="mt-2 flex items-center justify-between text-[10px] text-[#9699a6]">
+                          <div className="mt-1.5 flex items-center justify-between text-[10px] text-[#c3c2bf]">
                             <span style={{ color: group?.color }}>{group?.name}</span>
-                            {item.due_date && <span>📅 {item.due_date}</span>}
+                            {item.due_date && <span>{item.due_date}</span>}
                           </div>
                         </div>
                       );
                     })}
                     {colItems.length === 0 && (
-                      <div className="rounded-lg border border-dashed border-[#c5c7d0] p-3 text-center text-xs text-[#9699a6]">
+                      <div className="rounded-md border border-dashed border-[#e8e5e0] p-3 text-center text-[11px] text-[#c3c2bf]">
                         Drop items here
                       </div>
                     )}
@@ -705,38 +694,35 @@ export default function BoardView({
           </div>
         )}
 
-        {/* ============ ACTIVITY VIEW ============ */}
         {tab === "activity" && (
           <div className="mx-auto max-w-2xl">
             {activity === null ? (
-              <p className="text-sm text-[#676879]">Loading activity…</p>
+              <p className="text-[13px] text-[#9b9a97]">Loading...</p>
             ) : activity.length === 0 ? (
-              <p className="text-sm text-[#676879]">No activity on this board yet.</p>
+              <p className="text-[13px] text-[#9b9a97]">No activity on this board yet.</p>
             ) : (
-              <ul className="overflow-hidden rounded-xl border border-[#d0d4e4] bg-white">
-                {activity.map((a, idx) => (
-                  <li
+              <div className="space-y-0.5">
+                {activity.map((a) => (
+                  <div
                     key={a.id}
-                    className={`flex items-start gap-3 px-5 py-3.5 ${
-                      idx > 0 ? "border-t border-[#f0f1f5]" : ""
-                    }`}
+                    className="flex items-start gap-2.5 rounded-md px-3 py-2 hover:bg-[#f7f6f3]"
                   >
-                    <Avatar id={a.user_id} name={a.user_name} size={30} />
+                    <Avatar id={a.user_id} name={a.user_name} size={20} />
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm">
-                        <span className="font-semibold text-[#323338]">{a.user_name}</span>{" "}
-                        <span className="text-[#676879]">{a.action}</span>
+                      <div className="text-[13px]">
+                        <span className="font-medium text-[#37352f]">{a.user_name}</span>{" "}
+                        <span className="text-[#787774]">{a.action}</span>
                       </div>
                       {a.detail && (
-                        <div className="mt-0.5 truncate text-xs text-[#9699a6]">{a.detail}</div>
+                        <div className="mt-0.5 truncate text-[12px] text-[#c3c2bf]">{a.detail}</div>
                       )}
                     </div>
-                    <span className="shrink-0 text-xs text-[#9699a6]">
+                    <span className="shrink-0 text-[11px] text-[#c3c2bf]">
                       {a.created_at.replace("T", " ").slice(0, 16)}
                     </span>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         )}

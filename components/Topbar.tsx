@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Avatar from "./Avatar";
 import type { SessionUser } from "@/lib/auth";
 
-export default function Topbar({ user }: { user: SessionUser }) {
+export default function Topbar({ user, onMenuToggle }: { user: SessionUser; onMenuToggle?: () => void }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showPwModal, setShowPwModal] = useState(false);
@@ -48,11 +48,24 @@ export default function Topbar({ user }: { user: SessionUser }) {
   }
 
   const inputCls =
-    "w-full rounded-lg border border-[#d0d4e4] px-3.5 py-2.5 text-sm focus:border-[#6161ff] focus:ring-2 focus:ring-[#6161ff]/20";
+    "w-full rounded-md border border-[#e8e5e0] px-3 py-2 text-sm text-[#37352f] placeholder:text-[#9b9a97] focus:border-[#2383e2] focus:ring-1 focus:ring-[#2383e2]/30";
 
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-[#d0d4e4] bg-white px-6">
-      <div className="text-sm text-[#676879]">
+    <header className="flex h-11 shrink-0 items-center justify-between border-b border-[#e8e5e0]/60 px-3 md:px-4">
+      <div className="flex items-center gap-2">
+        {onMenuToggle && (
+          <button
+            onClick={onMenuToggle}
+            className="flex h-7 w-7 items-center justify-center rounded text-[#787774] transition hover:bg-[#f1f1ef] md:hidden"
+            aria-label="Toggle sidebar"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </button>
+        )}
+      </div>
+      <div className="hidden text-[13px] text-[#9b9a97] md:block">
         {new Date().toLocaleDateString("en-US", {
           weekday: "long",
           month: "long",
@@ -63,22 +76,21 @@ export default function Topbar({ user }: { user: SessionUser }) {
       <div className="relative">
         <button
           onClick={() => setMenuOpen((v) => !v)}
-          className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 transition hover:bg-[#f6f7fb]"
+          className="flex items-center gap-2 rounded-md px-2 py-1 transition hover:bg-[#f1f1ef]"
         >
-          <Avatar id={user.id} name={user.name} size={32} />
-          <div className="text-left">
-            <div className="text-sm font-semibold leading-tight text-[#323338]">
-              {user.name}
-            </div>
-            <div className="text-[11px] leading-tight text-[#676879]">{user.email}</div>
-          </div>
+          <Avatar id={user.id} name={user.name} size={24} />
+          <span className="text-sm text-[#37352f]">{user.name}</span>
         </button>
         {menuOpen && (
           <>
             <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-            <div className="menu-pop absolute right-0 z-50 mt-1 w-52 rounded-xl border border-[#d0d4e4] bg-white py-1.5 shadow-xl">
-              <div className="border-b border-[#f0f1f5] px-4 py-2 text-xs text-[#676879]">
-                Signed in as <span className="font-medium text-[#323338]">{user.role}</span>
+            <div className="menu-pop absolute right-0 z-50 mt-1 w-48 rounded-lg border border-[#e8e5e0] bg-white py-1 shadow-lg">
+              <div className="border-b border-[#e8e5e0]/60 px-3 py-2">
+                <div className="text-sm font-medium text-[#37352f]">{user.name}</div>
+                <div className="text-[11px] text-[#9b9a97]">{user.email}</div>
+                <span className="mt-1 inline-block rounded bg-[#f1f1ef] px-1.5 py-0.5 text-[10px] font-medium text-[#787774]">
+                  {user.role}
+                </span>
               </div>
               <button
                 onClick={() => {
@@ -86,13 +98,13 @@ export default function Topbar({ user }: { user: SessionUser }) {
                   setShowPwModal(true);
                   setPwError("");
                 }}
-                className="w-full px-4 py-2 text-left text-sm text-[#323338] transition hover:bg-[#f6f7fb]"
+                className="w-full px-3 py-1.5 text-left text-sm text-[#37352f] transition hover:bg-[#f1f1ef]"
               >
                 Change password
               </button>
               <button
                 onClick={logout}
-                className="w-full px-4 py-2 text-left text-sm text-[#df2f4a] transition hover:bg-[#f6f7fb]"
+                className="w-full px-3 py-1.5 text-left text-sm text-[#e03e3e] transition hover:bg-[#f1f1ef]"
               >
                 Log out
               </button>
@@ -103,17 +115,17 @@ export default function Topbar({ user }: { user: SessionUser }) {
 
       {showPwModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 sm:items-center"
           onClick={() => setShowPwModal(false)}
         >
           <div
-            className="menu-pop w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl"
+            className="menu-pop w-full max-w-sm rounded-t-xl border border-[#e8e5e0] bg-white p-5 shadow-xl sm:rounded-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-lg font-bold text-[#323338]">Change password</h3>
+            <h3 className="text-base font-semibold text-[#37352f]">Change password</h3>
             {pwDone ? (
-              <p className="mt-4 rounded-lg bg-[#00c875]/10 px-4 py-3 text-sm font-medium text-[#00764a]">
-                ✓ Password updated.
+              <p className="mt-4 rounded-md bg-[#4dab9a]/10 px-3 py-2.5 text-sm font-medium text-[#0f7b6c]">
+                Password updated.
               </p>
             ) : (
               <form onSubmit={changePassword} className="mt-4 space-y-3">
@@ -144,21 +156,21 @@ export default function Topbar({ user }: { user: SessionUser }) {
                   placeholder="Confirm new password"
                   className={inputCls}
                 />
-                {pwError && <p className="text-sm text-[#df2f4a]">{pwError}</p>}
+                {pwError && <p className="text-sm text-[#e03e3e]">{pwError}</p>}
                 <div className="flex justify-end gap-2 pt-1">
                   <button
                     type="button"
                     onClick={() => setShowPwModal(false)}
-                    className="rounded-lg px-4 py-2 text-sm font-medium text-[#676879] hover:bg-[#f6f7fb]"
+                    className="rounded-md px-3 py-1.5 text-sm text-[#787774] hover:bg-[#f1f1ef]"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="rounded-lg bg-[#6161ff] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[#5151d5] disabled:opacity-50"
+                    className="rounded-md bg-[#2383e2] px-3 py-1.5 text-sm font-medium text-white transition hover:bg-[#1b6ec2] disabled:opacity-50"
                   >
-                    {saving ? "Saving…" : "Update password"}
+                    {saving ? "Saving..." : "Update"}
                   </button>
                 </div>
               </form>

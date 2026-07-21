@@ -4,6 +4,7 @@ export type Board = {
   description: string;
   color: string;
   created_by: number;
+  category: string;
   created_at: string;
   item_count?: number;
   done_count?: number;
@@ -55,6 +56,7 @@ export type Bill = {
   ref_no: string | null;
   created_at: string;
   decided_at: string | null;
+  acknowledged_at: string | null;
   submitter_name: string;
   approver_name: string | null;
 };

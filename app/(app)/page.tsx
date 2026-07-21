@@ -42,7 +42,6 @@ export default async function HomePage() {
     )
     .all() as ActivityRow[];
 
-  // Build a conic-gradient donut of item statuses
   const total = totals.total || 1;
   let acc = 0;
   const segments: string[] = [];
@@ -56,71 +55,70 @@ export default async function HomePage() {
   }
   const donut = segments.length
     ? `conic-gradient(${segments.join(", ")})`
-    : "conic-gradient(#e5e7ef 0deg 360deg)";
+    : "conic-gradient(#e8e5e0 0deg 360deg)";
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const stats = [
-    { label: "Total tasks", value: totals.total ?? 0, color: "#6161ff" },
-    { label: "Completed", value: totals.done ?? 0, color: "#00c875" },
-    { label: "Stuck", value: totals.stuck ?? 0, color: "#df2f4a" },
-    { label: "Assigned to me", value: totals.mine ?? 0, color: "#fdab3d" },
+    { label: "Total tasks", value: totals.total ?? 0, color: "#37352f" },
+    { label: "Completed", value: totals.done ?? 0, color: "#4dab9a" },
+    { label: "Stuck", value: totals.stuck ?? 0, color: "#e03e3e" },
+    { label: "Assigned to me", value: totals.mine ?? 0, color: "#d9730d" },
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-8 py-8">
-      <h1 className="text-2xl font-bold text-[#323338]">
-        {greeting}, {session.name.split(" ")[0]}! 👋
+    <div className="mx-auto max-w-5xl px-4 py-6 md:px-10 md:py-10">
+      <h1 className="text-3xl font-bold text-[#37352f]">
+        {greeting}, {session.name.split(" ")[0]}
       </h1>
-      <p className="mt-1 text-[#676879]">Here&apos;s what&apos;s happening across Etidhi.</p>
+      <p className="mt-1 text-[#787774]">Here&apos;s what&apos;s happening across Etidhi.</p>
 
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-xl border border-[#d0d4e4] bg-white p-5">
-            <div className="text-3xl font-bold" style={{ color: s.color }}>
+          <div key={s.label} className="rounded-lg border border-[#e8e5e0] p-4">
+            <div className="text-2xl font-bold" style={{ color: s.color }}>
               {s.value}
             </div>
-            <div className="mt-1 text-sm text-[#676879]">{s.label}</div>
+            <div className="mt-0.5 text-[13px] text-[#9b9a97]">{s.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        {/* Boards */}
+      <div className="mt-8 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h2 className="mb-3 text-lg font-semibold text-[#323338]">Your boards</h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <h2 className="mb-3 text-[13px] font-semibold uppercase tracking-wider text-[#9b9a97]">
+            Your boards
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
             {boards.map((b) => {
               const pct = b.item_count ? Math.round(((b.done_count ?? 0) / b.item_count) * 100) : 0;
               return (
                 <Link
                   key={b.id}
                   href={`/boards/${b.id}`}
-                  className="group rounded-xl border border-[#d0d4e4] bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md"
+                  className="group rounded-lg border border-[#e8e5e0] p-4 transition hover:bg-[#f7f6f3]"
                 >
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-2">
                     <span
-                      className="h-3 w-3 rounded-sm"
+                      className="h-2.5 w-2.5 rounded-sm"
                       style={{ backgroundColor: b.color }}
                     />
-                    <span className="font-semibold text-[#323338] group-hover:text-[#6161ff]">
-                      {b.name}
-                    </span>
+                    <span className="font-medium text-[#37352f]">{b.name}</span>
                   </div>
                   {b.description && (
-                    <p className="mt-1.5 line-clamp-1 text-sm text-[#676879]">{b.description}</p>
+                    <p className="mt-1 line-clamp-1 text-[13px] text-[#9b9a97]">{b.description}</p>
                   )}
-                  <div className="mt-4">
-                    <div className="flex justify-between text-xs text-[#676879]">
+                  <div className="mt-3">
+                    <div className="flex justify-between text-[12px] text-[#9b9a97]">
                       <span>
                         {b.done_count}/{b.item_count} done
                       </span>
                       <span>{pct}%</span>
                     </div>
-                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-[#f0f1f5]">
+                    <div className="mt-1 h-1 overflow-hidden rounded-full bg-[#e8e5e0]">
                       <div
-                        className="h-full rounded-full bg-[#00c875] transition-all"
+                        className="h-full rounded-full bg-[#4dab9a] transition-all"
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -131,29 +129,30 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Right column: donut + activity */}
         <div className="space-y-6">
-          <div className="rounded-xl border border-[#d0d4e4] bg-white p-5">
-            <h3 className="font-semibold text-[#323338]">Status overview</h3>
-            <div className="mt-4 flex items-center gap-5">
+          <div className="rounded-lg border border-[#e8e5e0] p-4">
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#9b9a97]">
+              Status overview
+            </h3>
+            <div className="mt-4 flex items-center gap-4">
               <div
-                className="relative h-28 w-28 shrink-0 rounded-full"
+                className="relative h-24 w-24 shrink-0 rounded-full"
                 style={{ background: donut }}
               >
-                <div className="absolute inset-3 flex items-center justify-center rounded-full bg-white">
-                  <span className="text-xl font-bold text-[#323338]">{totals.total ?? 0}</span>
+                <div className="absolute inset-2.5 flex items-center justify-center rounded-full bg-white">
+                  <span className="text-lg font-bold text-[#37352f]">{totals.total ?? 0}</span>
                 </div>
               </div>
-              <ul className="space-y-1.5 text-xs">
+              <ul className="space-y-1 text-[12px]">
                 {STATUSES.map((s) => {
                   const n = statusCounts.find((c) => c.status === s.value)?.n ?? 0;
                   return (
-                    <li key={s.value} className="flex items-center gap-2 text-[#676879]">
+                    <li key={s.value} className="flex items-center gap-1.5 text-[#787774]">
                       <span
-                        className="h-2.5 w-2.5 rounded-sm"
+                        className="h-2 w-2 rounded-sm"
                         style={{ backgroundColor: statusColor(s.value) }}
                       />
-                      {s.value} · <span className="font-semibold text-[#323338]">{n}</span>
+                      {s.value} &middot; <span className="font-medium text-[#37352f]">{n}</span>
                     </li>
                   );
                 })}
@@ -161,23 +160,25 @@ export default async function HomePage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-[#d0d4e4] bg-white p-5">
-            <h3 className="font-semibold text-[#323338]">Recent activity</h3>
-            <ul className="mt-3 space-y-3">
+          <div className="rounded-lg border border-[#e8e5e0] p-4">
+            <h3 className="text-[13px] font-semibold uppercase tracking-wider text-[#9b9a97]">
+              Recent activity
+            </h3>
+            <ul className="mt-3 space-y-2.5">
               {activity.map((a) => (
-                <li key={a.id} className="flex items-start gap-2.5 text-sm">
-                  <Avatar id={a.user_id} name={a.user_name} size={24} />
+                <li key={a.id} className="flex items-start gap-2 text-[13px]">
+                  <Avatar id={a.user_id} name={a.user_name} size={20} />
                   <div className="min-w-0">
-                    <span className="font-medium text-[#323338]">{a.user_name}</span>{" "}
-                    <span className="text-[#676879]">{a.action}</span>
+                    <span className="font-medium text-[#37352f]">{a.user_name}</span>{" "}
+                    <span className="text-[#787774]">{a.action}</span>
                     {a.detail && (
-                      <div className="truncate text-xs text-[#9699a6]">{a.detail}</div>
+                      <div className="truncate text-[12px] text-[#9b9a97]">{a.detail}</div>
                     )}
                   </div>
                 </li>
               ))}
               {activity.length === 0 && (
-                <li className="text-sm text-[#676879]">No activity yet.</li>
+                <li className="text-[13px] text-[#9b9a97]">No activity yet.</li>
               )}
             </ul>
           </div>

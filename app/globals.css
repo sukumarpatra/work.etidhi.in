@@ -1,17 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #6161ff;
-  --color-primary-dark: #5151d5;
-  --color-primary-light: #eceafe;
+  --color-primary: #2383e2;
+  --color-primary-dark: #1b6ec2;
+  --color-primary-light: #e8f0fe;
   --color-surface: #ffffff;
-  --color-canvas: #f6f7fb;
-  --color-ink: #323338;
-  --color-ink-soft: #676879;
-  --color-line: #d0d4e4;
-  --color-done: #00c875;
-  --color-working: #fdab3d;
-  --color-stuck: #df2f4a;
+  --color-canvas: #ffffff;
+  --color-sidebar: #f7f6f3;
+  --color-ink: #37352f;
+  --color-ink-soft: #787774;
+  --color-ink-faint: #9b9a97;
+  --color-line: #e8e5e0;
+  --color-hover: #f1f1ef;
+  --color-done: #4dab9a;
+  --color-working: #d9730d;
+  --color-stuck: #e03e3e;
 }
 
 html,
@@ -20,19 +23,23 @@ body {
 }
 
 body {
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol";
   color: var(--color-ink);
   background: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.003em;
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c5c7d0;
-  border-radius: 4px;
+  background: rgba(55, 53, 47, 0.16);
+  border-radius: 20px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(55, 53, 47, 0.3);
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -45,15 +52,15 @@ textarea {
 }
 
 .menu-pop {
-  animation: menu-pop 0.12s ease-out;
+  animation: menu-pop 0.1s ease-out;
 }
 @keyframes menu-pop {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.98);
+    transform: translateY(-2px);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
 }

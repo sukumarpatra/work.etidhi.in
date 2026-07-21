@@ -108,6 +108,16 @@ function migrate(db: Database.Database) {
   db.prepare(
     "UPDATE users SET email = replace(email, '@etidhi.com', '@etidhi.in') WHERE email LIKE '%@etidhi.com'"
   ).run();
+
+  const billCols = db.prepare("PRAGMA table_info(bills)").all() as { name: string }[];
+  if (!billCols.some((c) => c.name === "acknowledged_at")) {
+    db.exec("ALTER TABLE bills ADD COLUMN acknowledged_at TEXT");
+  }
+
+  const boardCols = db.prepare("PRAGMA table_info(boards)").all() as { name: string }[];
+  if (!boardCols.some((c) => c.name === "category")) {
+    db.exec("ALTER TABLE boards ADD COLUMN category TEXT NOT NULL DEFAULT 'General'");
+  }
 }
 
 function seed(db: Database.Database) {
