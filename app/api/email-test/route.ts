@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   const config = {
     host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
-    port: Number(process.env.SMTP_PORT) || 587,
+    port: 587,
     email: process.env.SMTP_EMAIL || "(not set)",
     password: process.env.SMTP_PASSWORD ? "****" + process.env.SMTP_PASSWORD.slice(-4) : "(not set)",
     md_email: process.env.MD_EMAIL || "(not set)",
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const smtpOpts: SMTPTransport.Options & { family: number } = {
       host: config.host,
       port: config.port,
-      secure: config.port === 465,
+      secure: false,
       family: 4,
       auth: {
         user: process.env.SMTP_EMAIL,

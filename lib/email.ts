@@ -1,11 +1,11 @@
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
-const smtpPort = Number(process.env.SMTP_PORT) || 465;
+const smtpPort = 587;
 const smtpOpts: SMTPTransport.Options & { family: number } = {
   host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
   port: smtpPort,
-  secure: smtpPort === 465,
+  secure: false,
   family: 4,
   auth: {
     user: process.env.SMTP_EMAIL,
