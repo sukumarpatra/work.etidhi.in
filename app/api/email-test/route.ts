@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   }
 
   const config = {
-    host: process.env.SMTP_HOST || "smtp.gmail.com",
+    host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
     port: Number(process.env.SMTP_PORT) || 587,
     email: process.env.SMTP_EMAIL || "(not set)",
     password: process.env.SMTP_PASSWORD ? "****" + process.env.SMTP_PASSWORD.slice(-4) : "(not set)",
