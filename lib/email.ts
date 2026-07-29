@@ -1,18 +1,19 @@
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
+import dns from "dns";
 
-const smtpPort = 587;
-const smtpOpts: SMTPTransport.Options & { family: number } = {
+dns.setDefaultResultOrder("ipv4first");
+
+const smtpOpts: SMTPTransport.Options = {
   host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
-  port: smtpPort,
+  port: 587,
   secure: false,
-  family: 4,
   auth: {
     user: process.env.SMTP_EMAIL,
     pass: process.env.SMTP_PASSWORD,
   },
 };
-const transporter = nodemailer.createTransport(smtpOpts as SMTPTransport.Options);
+const transporter = nodemailer.createTransport(smtpOpts);
 
 const FROM = `"Etidhi Work OS" <${process.env.SMTP_EMAIL || "noreply@etidhi.in"}>`;
 const MD_EMAIL = process.env.MD_EMAIL || "";
