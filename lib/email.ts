@@ -1,20 +1,42 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
+import { lookup } from "dns/promises";
 
-let _resend: Resend | null = null;
-function getResend() {
-  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY || "");
-  return _resend;
+let cachedTransporter: nodemailer.Transporter | null = null;
+
+async function getTransporter(): Promise<nodemailer.Transporter> {
+  if (cachedTransporter) return cachedTransporter;
+
+  const host = (process.env.SMTP_HOST || "smtp.gmail.com").trim();
+  const { address } = await lookup(host, { family: 4 });
+
+  const smtpOpts: SMTPTransport.Options = {
+    host: address,
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+    tls: { servername: host },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  };
+  cachedTransporter = nodemailer.createTransport(smtpOpts);
+  return cachedTransporter;
 }
 
-const FROM = process.env.EMAIL_FROM || "Etidhi Work OS <onboarding@resend.dev>";
+const FROM = `"Etidhi Work OS" <${process.env.SMTP_EMAIL || "noreply@etidhi.in"}>`;
 const MD_EMAIL = process.env.MD_EMAIL || "";
 
 export async function sendMdAlert(subject: string, html: string) {
   if (!MD_EMAIL) return;
   try {
-    await getResend().emails.send({
+    const transporter = await getTransporter();
+    await transporter.sendMail({
       from: FROM,
-      to: MD_EMAIL.split(",").map((e) => e.trim()),
+      to: MD_EMAIL,
       subject,
       html: wrapHtml(subject, html),
     });
@@ -26,9 +48,10 @@ export async function sendMdAlert(subject: string, html: string) {
 export async function sendUserAlert(to: string, subject: string, html: string) {
   if (!to) return;
   try {
-    await getResend().emails.send({
+    const transporter = await getTransporter();
+    await transporter.sendMail({
       from: FROM,
-      to: [to],
+      to,
       subject,
       html: wrapHtml(subject, html),
     });
