@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
-import dns from "dns";
-
-dns.setDefaultResultOrder("ipv4first");
+import { lookup } from "dns/promises";
 
 export const dynamic = "force-dynamic";
 
@@ -14,23 +12,33 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const host = (process.env.SMTP_HOST || "smtp.gmail.com").trim();
+
   const config = {
-    host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
+    host,
     port: 587,
     email: process.env.SMTP_EMAIL || "(not set)",
     password: process.env.SMTP_PASSWORD ? "****" + process.env.SMTP_PASSWORD.slice(-4) : "(not set)",
     md_email: process.env.MD_EMAIL || "(not set)",
+    resolved_ip: "",
   };
 
   try {
+    const { address } = await lookup(host, { family: 4 });
+    config.resolved_ip = address;
+
     const smtpOpts: SMTPTransport.Options = {
-      host: config.host,
-      port: config.port,
+      host: address,
+      port: 587,
       secure: false,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
       },
+      tls: { servername: host },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 15000,
     };
     const transporter = nodemailer.createTransport(smtpOpts);
 

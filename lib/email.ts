@@ -1,19 +1,31 @@
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
-import dns from "dns";
+import { lookup } from "dns/promises";
 
-dns.setDefaultResultOrder("ipv4first");
+let cachedTransporter: nodemailer.Transporter | null = null;
 
-const smtpOpts: SMTPTransport.Options = {
-  host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_EMAIL,
-    pass: process.env.SMTP_PASSWORD,
-  },
-};
-const transporter = nodemailer.createTransport(smtpOpts);
+async function getTransporter(): Promise<nodemailer.Transporter> {
+  if (cachedTransporter) return cachedTransporter;
+
+  const host = (process.env.SMTP_HOST || "smtp.gmail.com").trim();
+  const { address } = await lookup(host, { family: 4 });
+
+  const smtpOpts: SMTPTransport.Options = {
+    host: address,
+    port: 587,
+    secure: false,
+    auth: {
+      user: process.env.SMTP_EMAIL,
+      pass: process.env.SMTP_PASSWORD,
+    },
+    tls: { servername: host },
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
+  };
+  cachedTransporter = nodemailer.createTransport(smtpOpts);
+  return cachedTransporter;
+}
 
 const FROM = `"Etidhi Work OS" <${process.env.SMTP_EMAIL || "noreply@etidhi.in"}>`;
 const MD_EMAIL = process.env.MD_EMAIL || "";
@@ -21,6 +33,7 @@ const MD_EMAIL = process.env.MD_EMAIL || "";
 export async function sendMdAlert(subject: string, html: string) {
   if (!MD_EMAIL) return;
   try {
+    const transporter = await getTransporter();
     await transporter.sendMail({
       from: FROM,
       to: MD_EMAIL,
@@ -35,6 +48,7 @@ export async function sendMdAlert(subject: string, html: string) {
 export async function sendUserAlert(to: string, subject: string, html: string) {
   if (!to) return;
   try {
+    const transporter = await getTransporter();
     await transporter.sendMail({
       from: FROM,
       to,
