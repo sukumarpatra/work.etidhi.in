@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { getDb } from "@/lib/db";
 import { ETIDHI_DOMAIN } from "@/lib/constants";
+import { notifyPasswordResetRequest } from "@/lib/notify";
 
 // Public endpoint: a locked-out user picks their preferred new password here.
 // The change only takes effect after an Etidhi admin approves the request,
@@ -41,7 +42,6 @@ export async function POST(req: NextRequest) {
 
   const hash = bcrypt.hashSync(newPassword, 10);
   const saveRequest = db.transaction(() => {
-    // A newer request replaces any pending one for the same account.
     db.prepare("DELETE FROM password_resets WHERE user_id = ? AND status = 'Pending'").run(user.id);
     db.prepare("INSERT INTO password_resets (user_id, new_password_hash) VALUES (?, ?)").run(
       user.id,
@@ -49,6 +49,9 @@ export async function POST(req: NextRequest) {
     );
   });
   saveRequest();
+
+  const userRow = db.prepare("SELECT name, email FROM users WHERE id = ?").get(user.id) as { name: string; email: string };
+  notifyPasswordResetRequest({ name: userRow.name, email: userRow.email });
 
   return genericOk;
 }

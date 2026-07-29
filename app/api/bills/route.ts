@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { getDb, logActivity } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
+import { notifyBillSubmitted } from "@/lib/notify";
 
 const ALLOWED_MIMES: Record<string, string> = {
   "image/jpeg": ".jpg",
@@ -85,6 +86,15 @@ export async function POST(req: NextRequest) {
 
   const bill = db
     .prepare(`${BILL_SELECT} WHERE b.id = ?`)
-    .get(Number(result.lastInsertRowid));
+    .get(Number(result.lastInsertRowid)) as { submitter_name: string } & Record<string, unknown>;
+
+  notifyBillSubmitted({
+    title,
+    amount,
+    category,
+    submitter_name: bill.submitter_name,
+    created_at: new Date().toISOString(),
+  });
+
   return NextResponse.json({ bill }, { status: 201 });
 }

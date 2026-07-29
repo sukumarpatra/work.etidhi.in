@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb, logActivity } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
 import { BOARD_COLORS, GROUP_COLORS } from "@/lib/constants";
+import { notifyNewBoard } from "@/lib/notify";
 
 export async function GET() {
   await requireSession();
@@ -41,6 +42,8 @@ export async function POST(req: NextRequest) {
   insertGroup.run(boardId, "Completed", GROUP_COLORS[1], 1);
 
   logActivity({ boardId, userId: session.id, action: "created board", detail: name.trim() });
+
+  notifyNewBoard({ name: name.trim(), category: cat, created_by: session.name });
 
   const board = db.prepare("SELECT * FROM boards WHERE id = ?").get(boardId);
   return NextResponse.json({ board }, { status: 201 });

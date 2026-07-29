@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import { getDb, logActivity } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
+import { notifyBillApproved, notifyBillRejected, notifyBillApproverAssigned } from "@/lib/notify";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -18,6 +19,7 @@ type BillRow = {
   user_id: number;
   title: string;
   amount: number;
+  category: string;
   status: string;
   approver_id: number | null;
   photo_path: string;
@@ -43,8 +45,8 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     }
     const approverId = body.approverId === null ? null : Number(body.approverId);
     if (approverId !== null) {
-      const approver = db.prepare("SELECT id, name FROM users WHERE id = ?").get(approverId) as
-        | { id: number; name: string }
+      const approver = db.prepare("SELECT id, name, email FROM users WHERE id = ?").get(approverId) as
+        | { id: number; name: string; email: string }
         | undefined;
       if (!approver) return NextResponse.json({ error: "Approver not found." }, { status: 400 });
       if (approver.id === bill.user_id) {
@@ -58,6 +60,17 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         userId: session.id,
         action: "assigned bill approver",
         detail: `"${bill.title}" → ${approver.name}`,
+      });
+
+      const submitter = db.prepare("SELECT name FROM users WHERE id = ?").get(bill.user_id) as { name: string };
+      notifyBillApproverAssigned({
+        title: bill.title,
+        amount: bill.amount,
+        category: bill.category || "",
+        submitter_name: submitter.name,
+        approver_email: approver.email,
+        approver_name: approver.name,
+        assigned_by: session.name,
       });
     }
     db.prepare("UPDATE bills SET approver_id = ? WHERE id = ?").run(approverId, bill.id);
@@ -82,8 +95,9 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       return NextResponse.json({ error: "This bill has already been decided." }, { status: 400 });
     }
 
+    const submitter = db.prepare("SELECT name FROM users WHERE id = ?").get(bill.user_id) as { name: string };
+
     if (body.action === "approve") {
-      // Approval triggers automatic reimbursement with a payment reference.
       const refNo = `ETD-RB-${String(bill.id).padStart(4, "0")}-${Date.now().toString(36).toUpperCase()}`;
       db.prepare(
         `UPDATE bills SET status = 'Reimbursed', ref_no = ?, approver_id = COALESCE(approver_id, ?),
@@ -94,6 +108,13 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         userId: session.id,
         action: "approved bill",
         detail: `"${bill.title}" · ₹${bill.amount} auto-reimbursed (${refNo})`,
+      });
+      notifyBillApproved({
+        title: bill.title,
+        amount: bill.amount,
+        submitter_name: submitter.name,
+        approver_name: session.name,
+        ref_no: refNo,
       });
     } else {
       const reason = typeof body.reason === "string" ? body.reason.trim() : "";
@@ -106,6 +127,13 @@ export async function PATCH(req: NextRequest, { params }: Params) {
         userId: session.id,
         action: "rejected bill",
         detail: `"${bill.title}"${reason ? ` — ${reason}` : ""}`,
+      });
+      notifyBillRejected({
+        title: bill.title,
+        amount: bill.amount,
+        submitter_name: submitter.name,
+        approver_name: session.name,
+        reason,
       });
     }
   }

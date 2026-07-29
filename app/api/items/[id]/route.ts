@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getDb, logActivity } from "@/lib/db";
 import { requireSession } from "@/lib/auth";
 import { STATUSES, PRIORITIES } from "@/lib/constants";
+import { notifyItemStuck, notifyItemCritical, notifyItemAssigned } from "@/lib/notify";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -37,19 +38,24 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     values.push(body.priority);
     logs.push(`priority → ${body.priority}`);
   }
+  let newAssigneeId: number | null = null;
+  let newAssigneeName: string | null = null;
+  let newAssigneeEmail: string | null = null;
   if ("assigneeId" in body) {
-    const assigneeId = body.assigneeId === null ? null : Number(body.assigneeId);
-    if (assigneeId !== null) {
-      const user = db.prepare("SELECT id, name FROM users WHERE id = ?").get(assigneeId) as
-        | { id: number; name: string }
+    newAssigneeId = body.assigneeId === null ? null : Number(body.assigneeId);
+    if (newAssigneeId !== null) {
+      const user = db.prepare("SELECT id, name, email FROM users WHERE id = ?").get(newAssigneeId) as
+        | { id: number; name: string; email: string }
         | undefined;
       if (!user) return NextResponse.json({ error: "Assignee not found." }, { status: 400 });
       logs.push(`assigned to ${user.name}`);
+      newAssigneeName = user.name;
+      newAssigneeEmail = user.email;
     } else {
       logs.push("unassigned");
     }
     updates.push("assignee_id = ?");
-    values.push(assigneeId);
+    values.push(newAssigneeId);
   }
   if ("dueDate" in body) {
     updates.push("due_date = ?");
@@ -88,7 +94,41 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       `SELECT i.*, u.name AS assignee_name FROM items i
        LEFT JOIN users u ON u.id = i.assignee_id WHERE i.id = ?`
     )
-    .get(item.id);
+    .get(item.id) as { assignee_name: string | null } & Record<string, unknown>;
+
+  const board = db.prepare("SELECT name FROM boards WHERE id = ?").get(item.board_id) as { name: string };
+
+  if (body.status === "Stuck") {
+    notifyItemStuck({
+      name: item.name,
+      board_name: board.name,
+      assignee_name: updated.assignee_name,
+      changed_by: session.name,
+    });
+  }
+  if (body.priority === "Critical") {
+    notifyItemCritical({
+      name: item.name,
+      board_name: board.name,
+      assignee_name: updated.assignee_name,
+      changed_by: session.name,
+    });
+  }
+
+  if (newAssigneeId !== null && newAssigneeEmail && newAssigneeId !== session.id) {
+    const u = updated as unknown as { status: string; priority: string; due_date: string | null };
+    notifyItemAssigned({
+      name: item.name,
+      board_name: board.name,
+      assignee_email: newAssigneeEmail,
+      assignee_name: newAssigneeName!,
+      assigned_by: session.name,
+      status: u.status,
+      priority: u.priority,
+      due_date: u.due_date,
+    });
+  }
+
   return NextResponse.json({ item: updated });
 }
 
