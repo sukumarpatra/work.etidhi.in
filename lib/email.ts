@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 const smtpPort = Number(process.env.SMTP_PORT) || 465;
-const transporter = nodemailer.createTransport({
+const smtpOpts: SMTPTransport.Options & { family: number } = {
   host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
   port: smtpPort,
   secure: smtpPort === 465,
@@ -10,7 +11,8 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_EMAIL,
     pass: process.env.SMTP_PASSWORD,
   },
-});
+};
+const transporter = nodemailer.createTransport(smtpOpts as SMTPTransport.Options);
 
 const FROM = `"Etidhi Work OS" <${process.env.SMTP_EMAIL || "noreply@etidhi.in"}>`;
 const MD_EMAIL = process.env.MD_EMAIL || "";

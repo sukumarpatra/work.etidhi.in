@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import nodemailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   };
 
   try {
-    const transporter = nodemailer.createTransport({
+    const smtpOpts: SMTPTransport.Options & { family: number } = {
       host: config.host,
       port: config.port,
       secure: config.port === 465,
@@ -28,7 +29,8 @@ export async function GET(req: NextRequest) {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
       },
-    });
+    };
+    const transporter = nodemailer.createTransport(smtpOpts as SMTPTransport.Options);
 
     await transporter.verify();
 
