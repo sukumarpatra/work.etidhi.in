@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
     const transporter = nodemailer.createTransport({
       host: config.host,
       port: config.port,
-      secure: false,
+      secure: config.port === 465,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
