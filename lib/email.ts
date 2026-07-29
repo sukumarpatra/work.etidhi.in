@@ -5,6 +5,7 @@ const transporter = nodemailer.createTransport({
   host: (process.env.SMTP_HOST || "smtp.gmail.com").trim(),
   port: smtpPort,
   secure: smtpPort === 465,
+  family: 4,
   auth: {
     user: process.env.SMTP_EMAIL,
     pass: process.env.SMTP_PASSWORD,

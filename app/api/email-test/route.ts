@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       host: config.host,
       port: config.port,
       secure: config.port === 465,
+      family: 4,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
